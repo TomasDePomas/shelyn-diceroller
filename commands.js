@@ -11,9 +11,8 @@ async function removeOldCommands (appId, guildId) {
     const endpoint = `applications/${appId}/guilds/${guildId}/commands`
     try {
         const res = await DiscordRequest(endpoint, { method: 'GET' })
-        const data = await res.json()
-        if (data) {
-            for (const installed of data) {
+        if (res.data) {
+            for (const installed of res.data) {
                 await DeleteGuildCommand(appId, guildId, installed)
             }
         }
@@ -27,7 +26,7 @@ async function InstallGuildCommand (appId, guildId, command) {
     console.log(`Installing "${command['name']}"`)
     const endpoint = `applications/${appId}/guilds/${guildId}/commands`
     try {
-        await DiscordRequest(endpoint, { method: 'POST', body: command })
+        await DiscordRequest(endpoint, { method: 'POST', data: command })
     } catch (err) {
         console.error(err)
     }
@@ -38,7 +37,7 @@ async function DeleteGuildCommand (appId, guildId, command) {
     console.log(`Deleting "${command['name']}"`)
     const endpoint = `applications/${appId}/guilds/${guildId}/commands/${command.id}`
     try {
-        await DiscordRequest(endpoint, { method: 'DELETE', body: command })
+        await DiscordRequest(endpoint, { method: 'DELETE', data: command })
     } catch (err) {
         console.error(err)
     }

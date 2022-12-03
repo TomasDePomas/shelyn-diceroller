@@ -1,4 +1,5 @@
 require('dotenv/config')
+const axios = require('axios')
 const { verifyKey } = require('discord-interactions')
 
 function VerifyDiscordRequest (clientKey) {
@@ -15,20 +16,21 @@ function VerifyDiscordRequest (clientKey) {
 }
 
 async function DiscordRequest (endpoint, options) {
-    const { default: fetch } = await import('node-fetch')
-    if (options.body) options.body = JSON.stringify(options.body)
-    const res = await fetch(`https://discord.com/api/v10/${endpoint}`, {
+    const res = await axios({
+        url: `https://discord.com/api/v10/${endpoint}`,
+        responseType: 'json',
+        responseEncoding: 'utf8',
         headers: {
+            'Accept-Encoding': '*',
             Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-            'Content-Type': 'application/json; charset=UTF-8',
+            'Content-Type': 'application/json',
             'User-Agent': 'Shelyn dicreoller (https://github.com/TomasDePomas/shelyn-diceroller, 1.0.0)',
         },
         ...options,
     })
-    if (!res.ok) {
-        const data = await res.json()
+    if (res.status < 200 || res.status >= 300) {
         console.log(res.status)
-        throw new Error(JSON.stringify(data))
+        throw new Error(JSON.stringify(res.data))
     }
     return res
 }
