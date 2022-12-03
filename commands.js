@@ -1,6 +1,6 @@
-import { DiscordRequest } from './utils.js'
+const { DiscordRequest } = require('./utils.js')
 
-export async function HasGuildCommands (appId, guildId, commands) {
+async function HasGuildCommands (appId, guildId, commands) {
     if (guildId === '' || appId === '') return
 
     await removeOldCommands(appId, guildId)
@@ -23,7 +23,7 @@ async function removeOldCommands (appId, guildId) {
 }
 
 // Installs a command
-export async function InstallGuildCommand (appId, guildId, command) {
+async function InstallGuildCommand (appId, guildId, command) {
     console.log(`Installing "${command['name']}"`)
     const endpoint = `applications/${appId}/guilds/${guildId}/commands`
     try {
@@ -34,7 +34,7 @@ export async function InstallGuildCommand (appId, guildId, command) {
 }
 
 // Deletes a command
-export async function DeleteGuildCommand (appId, guildId, command) {
+async function DeleteGuildCommand (appId, guildId, command) {
     console.log(`Deleting "${command['name']}"`)
     const endpoint = `applications/${appId}/guilds/${guildId}/commands/${command.id}`
     try {
@@ -44,7 +44,7 @@ export async function DeleteGuildCommand (appId, guildId, command) {
     }
 }
 
-export const ACT_COMMAND = {
+const ACT_COMMAND = {
     name: 'act',
     description: 'Enter a description of your action with dice roll blocks (for example: [d20 + 2], [2d4+2], [int:6])',
     type: 1,
@@ -56,8 +56,15 @@ export const ACT_COMMAND = {
     }],
 }
 
-export const ACT_HELP_COMMAND = {
+const ACT_HELP_COMMAND = {
     name: 'act-help',
     description: 'List the possibilities of the /act command',
     type: 1,
+}
+module.exports = {
+    HasGuildCommands,
+    InstallGuildCommand,
+    DeleteGuildCommand,
+    ACT_COMMAND,
+    ACT_HELP_COMMAND,
 }
