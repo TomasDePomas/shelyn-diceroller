@@ -8,14 +8,9 @@ import {
     ACT_COMMAND, ACT_HELP_COMMAND, HasGuildCommands,
 } from './commands.js'
 
-// Create an express app
 const app = express()
-// Get port, or default to 3000
 const PORT = process.env.PORT || 3000
-// Parse request body and verifies incoming requests using discord-interactions package
 app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }))
-
-// [text : nX aDt + m aDt + m aDt + m aDt + m]
 
 function matchShift (diceRoll, pattern, fallback = null) {
     const matches = diceRoll.command.match(pattern)
@@ -163,12 +158,6 @@ function rollDice (diceRoll) {
 
     return `[${description}${rollText}]`
 }
-
-
-// (**[19](http://d20  "16 +3")**)'
-// (**[~~_int:5_~~](http://d20  "1 +5")**)'
-// (**[fireball:12](http://d20 "2+5+3 +2")**)'
-// (**[12|5](http://d20 "12 | 5")**)(**[__*20*__|2](http://d20 "20 | 2")**)'
 
 app.post('/interactions', async function (req, res) {
     const { type, data } = req.body
