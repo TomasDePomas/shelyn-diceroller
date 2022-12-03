@@ -7,6 +7,15 @@ const { ACT_COMMAND, ACT_HELP_COMMAND, HasGuildCommands } = require('./commands.
 const app = express()
 app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }))
 
+if (!String.prototype.replaceAll) {
+    String.prototype.replaceAll = function(str, newStr){
+        if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+            return this.replace(str, newStr);
+        }
+        return this.replace(new RegExp(str, 'g'), newStr);
+    };
+}
+
 function matchShift (diceRoll, pattern, fallback = null) {
     const matches = diceRoll.command.match(pattern)
     if (!matches || matches.length === 0) {
@@ -189,7 +198,7 @@ app.post('/interactions', async function (req, res) {
     }
 })
 app.get('/status', async function (req, res) {
-    HasGuildCommands(process.env.APP_ID, process.env.GUILD_ID, [ACT_COMMAND, ACT_HELP_COMMAND])
+    await HasGuildCommands(process.env.APP_ID, process.env.GUILD_ID, [ACT_COMMAND, ACT_HELP_COMMAND])
     res.send('Shelyn is ready')
 })
 module.exports = app
