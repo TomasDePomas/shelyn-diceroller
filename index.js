@@ -2,19 +2,20 @@ require('dotenv/config')
 const express = require('express')
 const { InteractionType, InteractionResponseType } = require('discord-interactions')
 const { VerifyDiscordRequest } = require('./utils.js')
-const { ACT_COMMAND, ACT_HELP_COMMAND, HasGuildCommands } = require('./commands.js')
+const { ACT_COMMAND, ACT_HELP_COMMAND, ACT_AS_COMMAND, HasGuildCommands } = require('./commands.js')
 
 const app = express()
 app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }))
 
 if (!String.prototype.replaceAll) {
-    String.prototype.replaceAll = function(str, newStr){
+    String.prototype.replaceAll = function (str, newStr) {
         if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
-            return this.replace(str, newStr);
+            return this.replace(str, newStr)
         }
-        return this.replace(new RegExp(str, 'g'), newStr);
-    };
+        return this.replace(new RegExp(str, 'g'), newStr)
+    }
 }
+const characterNames = {}
 
 function matchShift (diceRoll, pattern, fallback = null) {
     const matches = diceRoll.command.match(pattern)
@@ -163,6 +164,17 @@ function rollDice (diceRoll) {
     return `[${description}${rollText}]`
 }
 
+function addCharactername (user, content) {
+    if (!user) {
+        return content
+    }
+    if (characterNames[user.id]) {
+        return `**${characterNames[user.id]}**: ${content}`
+    }
+
+    return `**[${user.username}](http://d# "Use act-as to set your character name")**: ${content}`
+}
+
 app.post('/interactions', async function (req, res) {
     const { type, data } = req.body
 
@@ -175,9 +187,28 @@ app.post('/interactions', async function (req, res) {
 
         switch (name) {
             case ACT_HELP_COMMAND.name:
+                const examples = ['d20+3', 'int:+5', 'fireball:3d6+2', '2x d20 1d8']
                 return res.send({
                     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE, data: {
-                        content: 'A few examples of the **/act** possibilities: ' + '\n\t[d20+3]\t\t\t\t\t| (**[19](http://d20  "16 +3")**)' + '\n\t[int:+5]\t\t\t\t\t | (**[~~_int:5_~~](http://d20  "1 +5")**)' + '\n\t[fireball:3d6+2]\t  | (**[fireball:12](http://d20 "2+5+3 +2")**)' + '\n\t[2x d20 1d8]\t\t    | (**[12|5](http://d20 "12 | 5")**)(**[__*20*__|2](http://d20 "20 | 2")**)',
+                        content: 'A few examples of the **/act** possibilities: ' +
+                            examples.map(command => `\n\t[${command}]\t| \t${rollDice({ command })}`).join('')
+                        + '\n\nFor all posiblities check [the manual](https://github.com/TomasDePomas/shelyn-diceroller/blob/main/README.md)'
+                    },
+                })
+            case ACT_AS_COMMAND.name:
+                let userId = req.body?.member?.user?.id
+                let characterName = req.body?.data?.options[0]?.value
+                if (!userId || !characterName) {
+                    return res.send({
+                        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE, data: {
+                            content: 'I am sorry, I won\'t be able to remember that. I am having some issues',
+                        },
+                    })
+                }
+                characterNames[userId] = characterName
+                return res.send({
+                    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE, data: {
+                        content: `**${characterName}**, I will try to remember that.`,
                     },
                 })
 
@@ -188,7 +219,7 @@ app.post('/interactions', async function (req, res) {
                 diceBlocks.forEach(block => {
                     content = content.replace(block[0], rollDice({ command: block[1] }))
                 })
-
+                content = addCharactername(req.body?.member?.user, content)
                 return res.send({
                     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE, data: {
                         content,
@@ -198,7 +229,7 @@ app.post('/interactions', async function (req, res) {
     }
 })
 app.get('/status', async function (req, res) {
-    await HasGuildCommands(process.env.APP_ID, process.env.GUILD_ID, [ACT_COMMAND, ACT_HELP_COMMAND])
+    await HasGuildCommands(process.env.APP_ID, process.env.GUILD_ID, [ACT_COMMAND, ACT_HELP_COMMAND, ACT_AS_COMMAND])
     res.send('Shelyn is ready')
 })
 module.exports = app

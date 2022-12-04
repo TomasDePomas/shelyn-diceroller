@@ -55,9 +55,18 @@ const ACT_COMMAND = {
     }],
 }
 
+const ACT_AS_COMMAND = {
+    name: 'act-as',
+    description: 'Add the name of your character to your future acts',
+    type: 1,
+    options: [{
+        type: 3, name: 'name', required: true, description: 'Enter your character names',
+    }],
+}
+
 const ACT_HELP_COMMAND = {
     name: 'act-help', description: 'List the possibilities of the /act command', type: 1,
 }
 module.exports = {
-    HasGuildCommands, InstallGuildCommand, DeleteGuildCommand, ACT_COMMAND, ACT_HELP_COMMAND,
+    HasGuildCommands, InstallGuildCommand, DeleteGuildCommand, ACT_COMMAND, ACT_HELP_COMMAND, ACT_AS_COMMAND,
 }
