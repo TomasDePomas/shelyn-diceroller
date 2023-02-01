@@ -129,8 +129,8 @@ function rollDice (diceRoll) {
         lastRoll = diceRoll.command.trim()
         let roll = new Roll()
         roll.setAmount(matchShift(diceRoll, /^(\d+)(?=d)/i, 1))
-        roll.setType(matchShift(diceRoll, /^d(\d+)/, 20))
-        roll.addModifier(matchShift(diceRoll, /^([+-]\W*\d+)/, '0'))
+        roll.setType(matchShift(diceRoll, /^d(\d+)/i, 20))
+        roll.addModifier(matchShift(diceRoll, /^([+-]\W*\d+)/i, '0'))
         rolls.push(roll)
 
         let remainder = diceRoll.command.trim()
