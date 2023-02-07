@@ -6,15 +6,27 @@ class MessageSender extends Singleton {
         this.name = 'messageSender'
     }
 
-    async sendFrom (channel, user, message) {
+    async sendFrom (channel, user, message, attachments = [], embeds = []) {
         const webhook = await this.getWebhook(channel)
         if (!webhook) {
             console.log('[WARNING] Attempting to send message in unregistered channel')
         }
+
+        if (!message && attachments.length === 0) {
+            return
+        }
+
+        const files = attachments.map(attachment => ({
+            attachment: attachment.url,
+            name: attachment.name,
+        }))
+
         await webhook.send({
             content: message,
             username: user.username,
             avatarURL: user.avatarURL(),
+            files,
+            embeds,
         })
     }
 

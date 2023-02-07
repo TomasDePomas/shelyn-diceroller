@@ -14,6 +14,6 @@ export default {
         const enhancedContent = DiceRoller.run(message.content)
 
         await message.delete()
-        await messageSender.sendFrom(message.channel, message.author, enhancedContent)
+        await messageSender.sendFrom(message.channel, message.author, enhancedContent, message.attachments, message.embeds)
     },
 }
