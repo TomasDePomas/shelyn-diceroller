@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js'
-import sendMessage from '../webhooks/sendMessage.js'
+import messageSender from '../webhooks/messageSender.js'
 
 export default {
     data: new SlashCommandBuilder()

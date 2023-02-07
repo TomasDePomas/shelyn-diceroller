@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js'
-import sendMessage from '../webhooks/sendMessage.js'
+import messageSender from '../webhooks/messageSender.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -9,7 +9,7 @@ export default {
     async execute (interaction) {
         await interaction.deferReply()
         try {
-            await sendMessage.sendFrom(interaction.channel, interaction.user, 'HALLO PONG!')
+            await messageSender.sendFrom(interaction.channel, interaction.user, 'HALLO PONG!')
             await interaction.deleteReply()
         } catch (error) {
             console.log({ error })
