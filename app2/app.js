@@ -6,12 +6,12 @@
 // DONE: Elk bericht door de roller pompen
 //   DONE bericht verwijderen
 //   DONE opnieuw posten
+// DONE: Message attachements
 
 // TODO: Edit message?
-   // TODO: Figure out a smart way to identify roles
+// TODO: Figure out a smart way to identify rolls
 // TODO: Config, welke kanalen, welke delimiter, character name, character avatar
 // TODO: Config opslaan
-// TODO: Message attachements
 
 import './utils/replaceAllPolyfill.js'
 import dotenv from 'dotenv'

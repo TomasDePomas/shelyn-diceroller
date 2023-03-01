@@ -24,7 +24,7 @@ class MessageSender extends Singleton {
         await webhook.send({
             content: message,
             username: user.username,
-            avatarURL: user.avatarURL(),
+            avatarURL: user.avatarOverwrite ? user.avatarOverwrite : user.avatarURL(),
             files,
             embeds,
         })

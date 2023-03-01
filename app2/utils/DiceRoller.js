@@ -1,15 +1,15 @@
 import { Roll } from './Roll.js'
 import Singleton from './Singleton.js'
+import { findPattern } from '../delimiters.js'
 
 class DiceRoller extends Singleton {
     constructor () {
         super(DiceRoller)
     }
 
-    run (baseText) {
+    run (baseText, delimiter = '[') {
         let text = baseText
-        const diceBlocks = [...baseText.matchAll(/\[([^\]]*)\]/mgi)]
-
+        const diceBlocks = [...baseText.matchAll(findPattern(delimiter))]
         diceBlocks.forEach(block => {
             text = text.replace(block[0], this.rollDice({ command: block[1] }))
         })
@@ -37,7 +37,7 @@ class DiceRoller extends Singleton {
                 rolling = false
             }
             if (lastRoll === remainder) {
-                return `( * * [Error](http://d# "unable to resolve ${baseRoll}")**)`
+                return `(** [Error](http://d# "unable to resolve ${baseRoll}")**)`
             }
         }
 

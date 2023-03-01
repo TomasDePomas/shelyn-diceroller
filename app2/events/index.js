@@ -38,9 +38,21 @@ export default {
     async registerEventHandlers (client, eventHandlers) {
         eventHandlers.forEach(handler => {
             if (handler.once) {
-                client.once(handler.event, (...args) => handler.listener(...args))
+                client.once(handler.event, (...args) => {
+                    try {
+                        handler.listener(...args)
+                    } catch (e) {
+                        console.log(`Something went wrong handling the [${handler.event}] event`, e.message)
+                    }
+                })
             } else {
-                client.on(handler.event, (...args) => handler.listener(...args))
+                client.on(handler.event, (...args) => {
+                    try {
+                        handler.listener(...args)
+                    } catch (e) {
+                        console.log(`Something went wrong handling the [${handler.event}] event`, e.message)
+                    }
+                })
             }
         })
     },
